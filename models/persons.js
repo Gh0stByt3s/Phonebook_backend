@@ -14,8 +14,20 @@ mongoose
   });
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    required: true,
+  },
+  number: {
+    type: String,
+    min: 8,
+    required: [true, "User phone number required"],
+    validate: {
+      validator: function (v) {
+        return /^[0-9]{2,3}-[0-9]{6,15}$/.test(v);
+      },
+    },
+  },
 });
 
 personSchema.set("toJSON", {
