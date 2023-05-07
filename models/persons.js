@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 mongoose.set("strictQuery", false);
 
 const url = process.env.MONGODB_URI;
@@ -23,7 +24,7 @@ const personSchema = new mongoose.Schema({
     min: 8,
     required: [true, "User phone number required"],
     validate: {
-      validator: function (v) {
+      validator(v) {
         return /^[0-9]{2,3}-[0-9]{6,15}$/.test(v);
       },
     },

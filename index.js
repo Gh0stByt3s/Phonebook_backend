@@ -1,10 +1,11 @@
 const express = require("express");
+
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
 
-const Person = require("./models/persons");
 const morgan = require("morgan");
+const Person = require("./models/persons");
 
 // morgan.token("body", function (req) {
 //   console.log(req.body);
@@ -14,10 +15,12 @@ const morgan = require("morgan");
 const errorHandler = (error, request, response, next) => {
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
-  } else if (error.name === "ValidationError") {
+  }
+  if (error.name === "ValidationError") {
     return response.status(400).json({ error: "Number not valid" });
   }
-  next(error);
+
+  return next(error);
 };
 
 const unknownEndpoint = (request, response) => {
@@ -40,15 +43,15 @@ app.get("/api/persons", (request, response) => {
 // Fetching a single person
 app.get("/api/persons/:id", (request, response, next) => {
   Person.findById(request.params.id)
-    .then((person) => {
-      person ? response.json(person) : response.status(404).end();
-    })
+    .then((person) =>
+      person ? response.json(person) : response.status(404).end()
+    )
     .catch((error) => next(error));
 });
 
 // Creating a new person
 app.post("/api/persons", (request, response, next) => {
-  const body = request.body;
+  const { body } = request;
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -91,7 +94,7 @@ app.use(unknownEndpoint);
 // Middleware handler with result to errors
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
+const { PORT } = process.env;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
